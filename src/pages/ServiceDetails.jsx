@@ -1,15 +1,9 @@
-import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import mockup from "../utils/data.json";
-import BookingModal from "./BookingModal";
-import ErrorBoundary from "../utils/ErrorBoundary";
 
 const ServiceDetails = () => {
     const { serviceId } = useParams();
     const service = mockup.services[serviceId];
-
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     if (!service) {
         return <div>Service not Found!</div>;
@@ -40,28 +34,12 @@ const ServiceDetails = () => {
                         <div className="flex-1 text-lg text-gray-600">
                             {category.duration}
                         </div>
-                        <button
-                            onClick={() => {
-                                setSelectedCategory(category);
-                                setIsModalOpen(true);
-                            }}
-                            className="ml-2 px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition"
-                        >
+                        <button className="ml-2 px-4 py-2 bg-amber-500 text-white rounded-md hover:bg-amber-600 transition">
                             Book Now
                         </button>
                     </li>
                 ))}
             </ul>
-            {selectedCategory && (
-                <ErrorBoundary>
-                    <BookingModal
-                        isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
-                        service={service}
-                        category={selectedCategory}
-                    />
-                </ErrorBoundary>
-            )}
         </div>
     );
 };

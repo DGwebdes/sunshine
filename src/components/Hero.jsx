@@ -1,27 +1,17 @@
-import React, { useRef, useEffect } from "react";
 import { Link as ScrollLink } from "react-scroll";
-import { gsap } from "gsap";
 
 const Hero = () => {
-    const boxRef = useRef();
-
-    useEffect(() => {
-        gsap.fromTo(
-            boxRef.current,
-            { opacity: 0 },
-            { opacity: 1, duration: 2 },
-        );
-    }, []);
-
     return (
         <section
             id="hero"
-            className="h-screen flex justify-center items-center gap-10 border-t-1"
-            ref={boxRef}
+            className="h-screen flex justify-center items-center gap-10 border-t"
         >
             <div className="w-full p-2 place-items-center">
-                <div className="w-[250px] md:w-[350px] xl:w-[450px]">
-                    <img src="../../hero.png" alt="hero-image" />
+                <div className="w-62.5 md:w-87.5 xl:w-112.5">
+                    <img
+                        src="/hero.webp"
+                        alt="hero-image"
+                    />
                 </div>
                 <div className="flex flex-col gap-5 relative items-center">
                     <h1 className="font-[Boldonse] text-6xl sm:text-7xl md:text-9xl absolute bottom-36 sm:bottom-42 md:bottom-46 lg:bottom-40 xl:bottom-32">

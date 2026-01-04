@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Link as ScrollLink } from "react-scroll";
 
@@ -12,10 +12,17 @@ const Navbar = () => {
     return (
         <nav className="w-full py-5 px-5 md:px-15 flex justify-between items-center">
             <div className="transform transition-transform duration-500 hover:scale-110">
-                <img src="../../logo.png" alt="logo-img" width={75} />
+                <img
+                    src="/logo.webp"
+                    alt="logo-img"
+                    width={75}
+                />
             </div>
             <div className="md:hidden">
-                <button onClick={toggleMenu} className="focus:outline-none">
+                <button
+                    onClick={toggleMenu}
+                    className="focus:outline-none"
+                >
                     <svg
                         className="w-6 h-6"
                         fill="none"

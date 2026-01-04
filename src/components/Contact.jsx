@@ -1,4 +1,3 @@
-import React from "react";
 import { useForm, ValidationError } from "@formspree/react";
 
 function ContactForm() {
@@ -7,7 +6,10 @@ function ContactForm() {
         return <p>We will get in touch soon! 🎨</p>;
     }
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+        <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-2"
+        >
             <label htmlFor="name">Name</label>
             <input
                 className="border-r-12 border-b-2 bg-[#F0EFF4] rounded-lg p-1"
@@ -15,7 +17,11 @@ function ContactForm() {
                 type="text"
                 name="name"
             />
-            <ValidationError prefix="Name" field="name" errors={state.errors} />
+            <ValidationError
+                prefix="Name"
+                field="name"
+                errors={state.errors}
+            />
             <label htmlFor="email">Email Address</label>
             <input
                 className="border-r-12 border-b-2 bg-[#F0EFF4] rounded-lg p-1"
@@ -55,7 +61,7 @@ const Contact = () => {
     return (
         <section
             id="contact"
-            className="border-t-1 min-h-screen md:h-screen flex flex-col justify-center items-center gap-1"
+            className="border-t min-h-screen md:h-screen flex flex-col justify-center items-center gap-1"
         >
             <div className="p-2 w-full h-[80%] md:h-[90%] flex flex-col gap-10">
                 <div className="place-self-start place-content-start mt-5">

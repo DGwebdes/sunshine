@@ -5,7 +5,7 @@
             "description": "Professional manicure services including gel, acrylic, and classic polish.",
             "priceRange": "$15 - $50",
             "duration": "30 - 60 minutes",
-            "image": "../../pexels-aleks-20193621-6575023.jpg",
+            "image": "/pexels-aleks-20193621-6575023.webp",
             "categories": [
                 {
                     "id": "gel",
@@ -32,7 +32,7 @@
             "description": "Pamper your feet with our luxurious pedicure services.",
             "priceRange": "$20 - $60",
             "duration": "40 - 75 minutes",
-            "image": "../../pexels-ma-minh-269866-2235323.jpg",
+            "image": "/pexels-ma-minh-269866-2235323.webp",
             "categories": [
                 {
                     "id": "spa",
@@ -59,7 +59,7 @@
             "description": "Enhance your natural beauty with our eyelash extension services.",
             "priceRange": "$30 - $120",
             "duration": "45 - 90 minutes",
-            "image": "../../pexels-misolo-cosmetic-2588316-11179655.jpg",
+            "image": "/pexels-misolo-cosmetic-2588316-11179655.webp",
             "categories": [
                 {
                     "id": "classic",
@@ -86,7 +86,7 @@
             "description": "Revitalize your skin with our expert facial treatments.",
             "priceRange": "$40 - $150",
             "duration": "45 - 90 minutes",
-            "image": "../../pexels-tai-zatolinni-2703959-8570002.jpg",
+            "image": "/pexels-tai-zatolinni-2703959-8570002.webp",
             "categories": [
                 {
                     "id": "hydrating",

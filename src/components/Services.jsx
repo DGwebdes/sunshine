@@ -1,4 +1,3 @@
-import React from "react";
 import mockup from "../utils/data.json";
 import { Link } from "react-router-dom";
 
@@ -45,7 +44,7 @@ const Services = () => {
     return (
         <section
             id="work"
-            className="h-screen flex flex-col justify-center items-center gap-10 border-t-1"
+            className="h-screen flex flex-col justify-center items-center gap-10 border-t"
         >
             <div className="w-full h-[80%] md:h-[90%] flex flex-col p-2 overflow-clip">
                 <div className="flex-1">

@@ -1,10 +1,8 @@
-import React from "react";
-
 const About = () => {
     return (
         <section
             id="about"
-            className="h-screen flex flex-col justify-center items-center border-t-1 overflow-y-scroll md:overflow-hidden"
+            className="h-screen flex flex-col justify-center items-center border-t overflow-y-scroll md:overflow-hidden"
         >
             <div className="w-full h-[80%] md:h-[90%] md:flex p-2">
                 <div className="flex-1 flex flex-col gap-5 md:gap-10 mt-5">
@@ -31,11 +29,11 @@ const About = () => {
                 </div>
                 <div className="flex-2 grid grid-cols-2 xl:grid-cols-3 gap-4 p-4 over">
                     {[
-                        "../../1.jpg",
-                        "../../2.jpg",
-                        "../../pexels-ma-minh-269866-2235323.jpg",
-                        "../../pexels-tai-zatolinni-2703959-8570002.jpg",
-                        "../../pexels-misolo-cosmetic-2588316-11179655.jpg",
+                        "/1.webp",
+                        "/2.webp",
+                        "/pexels-ma-minh-269866-2235323.webp",
+                        "/pexels-tai-zatolinni-2703959-8570002.webp",
+                        "/pexels-misolo-cosmetic-2588316-11179655.webp",
                     ].map((img, index) => (
                         <div
                             key={index}
@@ -47,7 +45,7 @@ const About = () => {
                                 className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105 group-hover:shadow-lg"
                             />
                             <div className="absolute inset-0 flex flex-col justify-center items-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                                <div className="w-[50px] h-[50px] rounded-full bg-amber-500 flex justify-center items-center">
+                                <div className="w-12.5 h-12.5 rounded-full bg-amber-500 flex justify-center items-center">
                                     <span className="text-white text-2xl group-hover:cursor-pointer">
                                         →
                                     </span>
