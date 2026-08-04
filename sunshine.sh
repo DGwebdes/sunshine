@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "I'm walking on Sunshine..."
-echo ""
+set -e
+set -o pipeline
 
 # I'M REALLY SORRY YOU HAVE TO SEE THIS! BUT I DON'T WANT TO USE MORE THAN ONE FILE. SO HERE IT GOES: variables & arrays
 declare -A distro_pm=(
@@ -14,23 +14,31 @@ declare -A distro_pm=(
 )
 essentials=(build-essential libreadline-dev unzip)
 
+handle_error(){
+	echo "Error: $1" >&2
+	exit "${2:-1}"
+}
+
 ## LUA commands and install
 install_lua(){
-	curl -L -R -O https://www.lua.org/ftp/lua-5.5.1.tar.gz \
-	tar zxf lua-5.5.1.tar.gz \
-	cd lua-5.5.1 \
-	make all test \
-	cd .. \
+	curl -L -R -O https://www.lua.org/ftp/lua-5.5.1.tar.gz 
+	if [[ $? -ne 0 ]]; then
+		handle_error "Something's up" 2
+	fi
+	tar zxf lua-5.5.1.tar.gz 
+	cd lua-5.5.1 
+	make all test 
+	cd .. 
 	rm -rf lua-*
 }
 ## LuaRocks
 install_lr(){
-	wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz \
-	tar zxpf luarocks-3.13.0.tar.gz \
-	cd luarocks-3.13.0 \
-	./configure && make && sudo make install \
-	sudo luarocks install luasocket \
-	cd .. \
+	wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz 
+	tar zxpf luarocks-3.13.0.tar.gz 
+	cd luarocks-3.13.0 
+	./configure && make && sudo make install 
+	sudo luarocks install luasocket 
+	cd .. 
 	rm -rf luarocks*
 }
 ## Neovim
@@ -68,7 +76,7 @@ install_kick(){
 # --- CONFIRM OS AND PACKAGE MANAGER BEFORE START INSTALLING ---
 os_pm(){
 
-	osdata=$(cat /etc/os-release | grep -e 'VERSION' -e 'ID' | tr '\n' ':')
+	osdata=$(cat /etc/os-release | grep -e 'VERSION' -e 'ID' | tr 'n' ':')
 	pm=""
 	IFS=":" read -r -a data <<< "${osdata}" 
 	for d in "${data[@]}"; do
@@ -106,7 +114,7 @@ installer(){
 			;;
 	esac
 	
-	echo $inst_comm
+	echo "$inst_comm"
 
 	#sudo "$pm" $inst_comm
 
