@@ -109,6 +109,10 @@ installer(){
 	echo "Installing Neovim"
 	install_nvim
 	echo
+
+	echo "Kickstarting...(see what I did)"
+	install_kick $pm
+	echo
 }
 
 echo "Updating the system..."
