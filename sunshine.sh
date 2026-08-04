@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-set -o pipeline
+set -o pipefail
 
 # I'M REALLY SORRY YOU HAVE TO SEE THIS! BUT I DON'T WANT TO USE MORE THAN ONE FILE. SO HERE IT GOES: variables & arrays
 declare -A distro_pm=(
@@ -14,69 +14,68 @@ declare -A distro_pm=(
 )
 essentials=(build-essential libreadline-dev unzip)
 
-handle_error(){
+## --- HELPER FUNCTIONS ---
+error_handler(){
 	echo "Error: $1" >&2
 	exit "${2:-1}"
 }
 
+# PRIMARY TOOLS TO INSTALL
+
 ## LUA commands and install
 install_lua(){
-	curl -L -R -O https://www.lua.org/ftp/lua-5.5.1.tar.gz 
-	if [[ $? -ne 0 ]]; then
-		handle_error "Something's up" 2
-	fi
-	tar zxf lua-5.5.1.tar.gz 
-	cd lua-5.5.1 
-	make all test 
+	curl -L -R -O https://www.lua.org/ftp/lua-5.5.1.tar.gz || error_handler "Curl failed to Download Lua" 2 
+	tar zxf lua-5.5.1.tar.gz || "Tar failed to extract" 2
+	cd lua-5.5.1 || error_handler "Failed to cd into lua directory" 2
+	make all test || error_handler "Failed to build lua" 2
 	cd .. 
 	rm -rf lua-*
 }
 ## LuaRocks
 install_lr(){
-	wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz 
-	tar zxpf luarocks-3.13.0.tar.gz 
-	cd luarocks-3.13.0 
-	./configure && make && sudo make install 
-	sudo luarocks install luasocket 
+	wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz || error_handler "Wget failed to download luarocks" 2
+	tar zxpf luarocks-3.13.0.tar.gz || error_handler "Tar failed to extract" 2
+	cd luarocks-3.13.0 || error_handler "Failed to cd into luarocks" 2
+	./configure && make && sudo make install || error_handler "Failed to build" 2
+	sudo luarocks install luasocket  || error_handler "Failed to install luarocks" 2
 	cd .. 
 	rm -rf luarocks*
 }
 ## Neovim
 install_nvim(){
-	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-	if [[ $?  -ne 0 ]]; then
-		echo "Error curling"
-	fi
-	sudo rm -rf /opt/nvim-linux-x86_64
-	if [[ $?  -ne 0 ]]; then
-		echo "Error removing directory"
-	fi
-	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
-	if [[ $?  -ne 0 ]]; then
-		echo "Error unzipping"
-	fi
-	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.bashrc
-	if [[ $?  -ne 0 ]]; then
-		echo "Error saving to PATH"
-	fi
+	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz || error_handler "Curl error to fetch neovim tarball" 2
+	sudo rm -rf /opt/nvim-linux-x86_64 || error_handler "Could not delete directory" 2
+	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz || error_handler "Tar extraction failed" 2
+	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.bashrc || error_handler "failed to export to path" 2
 	echo "Neovim Installed"
 }
 ## nvim Kickstart
 install_kick(){
-	sudo $1 install ripgrep fd-find xclip tree-sitter-cli
-	if [[ $?  -ne 0 ]]; then
-		echo "something went wrong with the previous step"
-	else
-		echo "cool, we can kickstart now"
-		echo
-		git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
-	fi
+	sudo $1 install ripgrep fd-find xclip tree-sitter-cli || error_handler "Failed to install kickstart essentials" 2
+	git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 }
+
+# Set ZSH as the default shell
+zsh_default(){
+	which zsh
+	if [[ $? -ne 0 ]]; then
+		echo "Could not find zsh. Installing..."
+		sudo $1 install zsh || error_handler "Could not install zsh" 2
+		chsh -s $(which zsh)
+	else
+		echo "Seems like you already have it!"
+		chsh -s $(which zsh)
+	fi
+
+	## Install oh-my-zsh
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+}
+
 
 # --- CONFIRM OS AND PACKAGE MANAGER BEFORE START INSTALLING ---
 os_pm(){
 
-	osdata=$(cat /etc/os-release | grep -e 'VERSION' -e 'ID' | tr 'n' ':')
+	osdata=$(cat /etc/os-release | grep -e 'VERSION' -e 'ID' | tr '\n' ':')
 	pm=""
 	IFS=":" read -r -a data <<< "${osdata}" 
 	for d in "${data[@]}"; do
@@ -116,11 +115,11 @@ installer(){
 	
 	echo "$inst_comm"
 
-	#sudo "$pm" $inst_comm
+	sudo "$pm" $inst_comm
 
-	#for i in ${essentials[@]}; do
-	#	sudo "$pm" install "$i"
-	#done
+	for i in ${essentials[@]}; do
+		sudo "$pm" install "$i"
+	done
 
 	echo "Installing Lua"
 	install_lua
@@ -133,6 +132,10 @@ installer(){
 
 	echo "Kickstarting...(see what I did)"
 	install_kick $pm
+	echo
+
+	echo "Making zsh the default shell and installing oh-my-zsh"
+	zsh_default
 	echo
 }
 
