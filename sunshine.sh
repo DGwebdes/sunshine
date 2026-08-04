@@ -15,7 +15,6 @@ declare -A distro_pm=(
 # CONFIRM OS AND PACKAGE MANAGER BEFORE START INSTALLING
 osdata=$(cat /etc/os-release | grep -e 'VERSION' -e 'ID' | tr '\n' ':')
 pm=""
-echo "Package manager: $pm"
 IFS=":" read -r -a data <<< "${osdata}" 
 for d in "${data[@]}"; do
 	key="${d%%=*}"	# Everything before the first =
@@ -23,8 +22,8 @@ for d in "${data[@]}"; do
 
 
 	if [[ -n ${distro_pm[$value]+x} ]]; then
-		pm=$value
-		echo "The package manager is: ${distro_pm[$value]}"
+		pm=${distro_pm[$value]}
+		echo "The package manager is: $pm"
 	fi
 done
 
