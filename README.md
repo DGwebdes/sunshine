@@ -12,15 +12,22 @@ Most often I have to:
 - Install necessary tools for my specific work
 - Install the tools I ALWAYS use regardless
 
-And although there's really not much to it, automation of repetitive tasks is why we are all here right ?
-
-That's the goal of this small project, install most useful tools I personally use almost everyday.
-
 ## What it Installs
 
-- Git
 - Build-Essential
 - Docker Engine
 - Neovim text editor
 - Nvim Kickstart (solid nvim configuration)
 - AI tools (opencode)
+
+This assumes you have Git and some of the most basic packages installed. 
+Right this also only works with Linux distributions.
+
+## Platforms
+
+### Linux
+
+- Debian / Ubuntu
+- Fedora
+- RHEL
+- Centos
