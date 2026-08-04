@@ -28,5 +28,22 @@ for d in "${data[@]}"; do
 done
 
 echo "Let's get ready to rumbleee!"
+echo "Updating the system..."
 
-sudo $pm update
+case $pm in
+	"apt-get")
+		echo "Debian underhood"
+		;;
+	"dnf")
+		echo "Fedora, Rhel or Centos"
+		;;
+	"pacman")
+		echo "running Arch I see"
+		;;
+	"zypper")
+		echo "OpenSUSE is nice"
+		;;
+	*)
+		echo "Keep your secrets then"
+		;;
+esac
