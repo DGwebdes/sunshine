@@ -15,109 +15,108 @@ declare -A distro_pm=(
 essentials=(build-essential libreadline-dev unzip)
 
 ## LUA commands and install
-get_lua=$(curl -L -R -O https://www.lua.org/ftp/lua-5.5.1.tar.gz)
-tar_lua=$(tar zxf lua-5.5.1.tar.gz)
-cd_lua=$(cd lua-5.5.1)
-make_lua=$(make all test)
-out_lua=$(cd ..)
-cleanup_lua=$(rm -rf lua-5.*)
-lua_commands=($get_lua $tar_lua $cd_lua $make_lua $out_lua $cleanup_lua)
-
+install_lua(){
+	$(curl -L -R -O https://www.lua.org/ftp/lua-5.5.1.tar.gz) \
+	$(tar zxf lua-5.5.1.tar.gz) \
+	$(cd lua-5.5.1) \
+	$(make all test) \
+	$(cd ..) \
+	$(rm -rf lua-*)
+}
 ## LuaRocks
-get_luarocks=$(wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz)
-tar_lr=$(tar zxpf luarocks-3.13.0.tar.gz)
-cd_lr=$(cd luarocks-3.13.0)
-make_lr=$(./configure && make && sudo make install)
-install_lr=$(sudo luarocks install luasocket)
-out_lr=$(cd ..)
-cleanup_lr=$(rm -rf luarocks*)
-lr_commands=($get_luarocks $tar_lr $cd_lr $make_lr $install_lr $out_lr $cleanup_lr)
-
+install_lr(){
+	$(wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz) \
+	$(tar zxpf luarocks-3.13.0.tar.gz) \
+	$(cd luarocks-3.13.0) \
+	$(./configure && make && sudo make install) \
+	$(sudo luarocks install luasocket) \
+	$(cd ..) \
+	$(rm -rf luarocks*)
+}
+## Neovim
+instal_nvim(){
+	$(curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz) \
+	$(sudo rm -rf /opt/nvim-linux-x86_64) \
+	$(sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz) \
+	$(export PATH="$PATH:/opt/nvim-linux-x86_64/bin" >> .bashrc)
+}
+## nvim Kickstart
+install_kick(){
+	sudo $1 install ripgreg fd-find xclip tree-sitter-cli
+	if [[ $? > 1 ]]; then
+		echo "something went wrong with the previous step"
+	else
+		echo "cool, we can kickstart now"
+		echo
+		git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
+	fi
+}
 
 # --- CONFIRM OS AND PACKAGE MANAGER BEFORE START INSTALLING ---
-osdata=$(cat /etc/os-release | grep -e 'VERSION' -e 'ID' | tr '\n' ':')
-pm=""
-IFS=":" read -r -a data <<< "${osdata}" 
-for d in "${data[@]}"; do
-	key="${d%%=*}"	# Everything before the first =
-	value="${d#*=}"	# Everything after the first =
+os_pm(){
+
+	osdata=$(cat /etc/os-release | grep -e 'VERSION' -e 'ID' | tr '\n' ':')
+	pm=""
+	IFS=":" read -r -a data <<< "${osdata}" 
+	for d in "${data[@]}"; do
+		key="${d%%=*}"	# Everything before the first =
+		value="${d#*=}"	# Everything after the first =
 
 
-	if [[ -n ${distro_pm[$value]+x} ]]; then
-		pm=${distro_pm[$value]}
-		echo "The package manager is: $pm"
-	fi
-done
-
+		if [[ -n ${distro_pm[$value]+x} ]]; then
+			pm=${distro_pm[$value]}
+		fi
+	done
+}
 
 # --- INSTALLATION FUNCTIONS ---
-apt_install(){
-	echo "apt / apt-get installs"
-	#sudo $pm update
+installer(){
+	echo "pm is: $pm"
+	inst_comm=''
+
+
+	case $pm in
+		"apt-get")
+			inst_comm="update"
+			;;
+		"dnf")
+			inst_comm="upgrade"
+			;;
+		"pacman")
+			echo "running Arch I see"
+			;;
+		"zypper")
+			echo "OpenSUSE is nice"
+			;;
+		*)
+			echo "Keep your secrets then"
+			;;
+	esac
+	
+	echo $inst_comm
+
+	#sudo $pm $inst_comm
 
 	#for i in ${essentials[@]}; do
 	#	sudo $pm install $i
 	#done
 
 	echo "Installing Lua"
-	for j in ${lua_commands[@]}; do
-		if [[ $? > 2 ]]; then
-			echo "Something went wrong"
-		fi
-		if [[ $? > 1 ]]; then
-			echo "Unsure what happened but might not be an error"
-		fi
-		echo $j
-	done
+	install_lua
+	install_lr
 	echo
-	for l in ${lr_commands[@]}; do
-		if [[ $? > 2 ]]; then
-			echo "Error occured"
-		fi
-		if [[ $? > 1 ]]; then
-			echo "Something is up"
-		fi
-		echo $k
-	done
+
+	echo "Installing Neovim"
+	install_nvim
 	echo
 }
-dnf_install(){
-	echo "dnf installs"
-	sudo $pm upgrade
 
-	for i in ${essentials[@]}; do
-		sudo $pm install $i
-	done
-
-	echo "Installing Lua"
-	for j in ${lua_commands[@]}; do
-		if [[ $? > 2 ]]; then
-			echo "Something went wrong"
-		fi
-		if [[ $? > 1 ]]; then
-			echo "Unsure what happened but might not be an error"
-		fi
-		echo $j
-	done
-	echo
-}
 echo "Updating the system..."
 
-case $pm in
-	"apt-get")
-		apt_install
-		;;
-	"dnf")
-		dnf_install
-		;;
-	"pacman")
-		echo "running Arch I see"
-		;;
-	"zypper")
-		echo "OpenSUSE is nice"
-		;;
-	*)
-		echo "Keep your secrets then"
-		;;
-esac
+main(){
+	os_pm
+	installer
+}
+
+main
 
