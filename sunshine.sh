@@ -3,7 +3,7 @@
 echo "I'm walking on Sunshine..."
 echo ""
 
-declare -A distro_mp=(
+declare -A distro_pm=(
 	[debian]="apt-get"
 	[ubuntu]="apt-get"
 	[fedora]="dnf"
@@ -22,12 +22,12 @@ for d in "${data[@]}"; do
 	value="${d#*=}"	# Everything after the first =
 
 
-	if [[ -n ${distro_mp[$value]+x} ]]; then
+	if [[ -n ${distro_pm[$value]+x} ]]; then
 		pm=$value
-		echo "The package manager is: ${distro_mp[$value]}"
+		echo "The package manager is: ${distro_pm[$value]}"
 	fi
 done
 
 echo "Let's get ready to rumbleee!"
 
-sudo apt update
+sudo $pm update
