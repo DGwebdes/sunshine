@@ -25,7 +25,7 @@ error_handler(){
 ## LUA commands and install
 install_lua(){
 	curl -L -R -O https://www.lua.org/ftp/lua-5.5.1.tar.gz || error_handler "Curl failed to Download Lua" 2 
-	tar zxf lua-5.5.1.tar.gz || "Tar failed to extract" 2
+	tar zxf lua-5.5.1.tar.gz || error_handler "Tar failed to extract" 2
 	cd lua-5.5.1 || error_handler "Failed to cd into lua directory" 2
 	make all test || error_handler "Failed to build lua" 2
 	cd .. 
@@ -57,8 +57,7 @@ install_kick(){
 
 # Set ZSH as the default shell
 zsh_default(){
-	which zsh
-	if [[ $? -ne 0 ]]; then
+	if ! which zsh >/dev/null 2>&1; then
 		echo "Could not find zsh. Installing..."
 		sudo $1 install zsh || error_handler "Could not install zsh" 2
 		chsh -s $(which zsh)
@@ -92,7 +91,7 @@ os_pm(){
 # --- INSTALLATION FUNCTIONS ---
 installer(){
 	echo "pm is: $pm"
-	inst_comm=''
+	inst_comm=""
 
 
 	case $pm in
@@ -115,10 +114,10 @@ installer(){
 	
 	echo "$inst_comm"
 
-	sudo "$pm" $inst_comm
+	sudo "$pm" "$inst_comm"
 
-	for i in ${essentials[@]}; do
-		sudo "$pm" install "$i"
+	for i in "${essentials[@]}"; do
+		sudo "$pm" install -y "$i"
 	done
 
 	echo "Installing Lua"
@@ -131,7 +130,7 @@ installer(){
 	echo
 
 	echo "Kickstarting...(see what I did)"
-	install_kick $pm
+	install_kick "$pm"
 	echo
 
 	echo "Making zsh the default shell and installing oh-my-zsh"
