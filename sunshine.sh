@@ -47,7 +47,6 @@ install_nvim(){
 	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz || error_handler "Curl error to fetch neovim tarball" 2
 	sudo rm -rf /opt/nvim-linux-x86_64 || error_handler "Could not delete directory" 2
 	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz || error_handler "Tar extraction failed" 2
-	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
 	echo "Neovim Installed"
 }
 ## nvim Kickstart
@@ -69,6 +68,7 @@ zsh_default(){
 
 	## Install oh-my-zsh [INTERACTIVE, WILL BLOCK]
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
 }
 
 
@@ -81,8 +81,6 @@ os_pm(){
 	for d in "${data[@]}"; do
 		key="${d%%=*}"	# Everything before the first =
 		value="${d#*=}"	# Everything after the first =
-		echo "This is the key: $key"
-		echo "This is the value: $value"
 
 		if [[ -n ${distro_pm[$value]+x} ]]; then
 			pm=${distro_pm[$value]}
@@ -127,10 +125,6 @@ installer(){
 		sudo "$pm" "${comm_install[@]}" "$i"
 	done
 
-	echo "Making zsh the default shell and installing oh-my-zsh"
-	zsh_default "$pm" "$comm_install"
-	echo
-
 	echo "Installing Lua"
 	install_lua
 	install_lr
@@ -142,6 +136,10 @@ installer(){
 
 	echo "Kickstarting...(see what I did)"
 	install_kick "$pm" "$comm_install"
+	echo
+	
+	echo "Making zsh the default shell and installing oh-my-zsh"
+	zsh_default "$pm" "$comm_install"
 	echo
 
 }
