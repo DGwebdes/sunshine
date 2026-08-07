@@ -48,7 +48,7 @@ install_nvim(){
 	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz || error_handler "Curl error to fetch neovim tarball" 2
 	sudo rm -rf /opt/nvim-linux-x86_64 || error_handler "Could not delete directory" 2
 	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz || error_handler "Tar extraction failed" 2
-	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.bashrc || error_handler "failed to export to path" 2
+	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
 	echo "Neovim Installed"
 }
 ## nvim Kickstart
@@ -123,6 +123,10 @@ installer(){
 		sudo "$pm" install -y "$i"
 	done
 
+	echo "Making zsh the default shell and installing oh-my-zsh"
+	zsh_default "$pm"
+	echo
+
 	echo "Installing Lua"
 	install_lua
 	install_lr
@@ -136,9 +140,6 @@ installer(){
 	install_kick "$pm"
 	echo
 
-	echo "Making zsh the default shell and installing oh-my-zsh"
-	zsh_default "$pm"
-	echo
 }
 
 echo "Updating the system..."
