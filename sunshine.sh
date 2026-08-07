@@ -3,7 +3,6 @@
 set -e
 set -o pipefail
 
-# I'M REALLY SORRY YOU HAVE TO SEE THIS! BUT I DON'T WANT TO USE MORE THAN ONE FILE. SO HERE IT GOES: variables & arrays
 declare -A distro_pm=(
 	[debian]="apt-get"
 	[ubuntu]="apt-get"
@@ -12,7 +11,7 @@ declare -A distro_pm=(
 	[arch]="pacman"
 	[opensuse]="zypper"
 )
-essentials=(build-essential libreadline-dev unzip)
+essentials=(build-essential libreadline-dev unzip curl wget)
 
 ## --- HELPER FUNCTIONS ---
 error_handler(){
@@ -27,7 +26,9 @@ install_lua(){
 	curl -L -R -O https://www.lua.org/ftp/lua-5.5.1.tar.gz || error_handler "Curl failed to Download Lua" 2 
 	tar zxf lua-5.5.1.tar.gz || error_handler "Tar failed to extract" 2
 	cd lua-5.5.1 || error_handler "Failed to cd into lua directory" 2
-	make all test || error_handler "Failed to build lua" 2
+	make all test || error_handler "Failed to build Lua" 2
+	make install || error_handler "Failed to Install Lua" 2
+	echo "Cleaning up"
 	cd .. 
 	rm -rf lua-*
 }
@@ -35,9 +36,10 @@ install_lua(){
 install_lr(){
 	wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz || error_handler "Wget failed to download luarocks" 2
 	tar zxpf luarocks-3.13.0.tar.gz || error_handler "Tar failed to extract" 2
-	cd luarocks-3.13.0 || error_handler "Failed to cd into luarocks" 2
-	./configure && make && sudo make install || error_handler "Failed to build" 2
-	sudo luarocks install luasocket  || error_handler "Failed to install luarocks" 2
+	cd luarocks-3.13.0 || error_handler "Failed to cd into LuaRocks" 2
+	./configure --with-lua-include=/usr/local/include && make && sudo make install || error_handler "Failed to build LuaRocks" 2
+	sudo luarocks install luasocket  || error_handler "Failed to install LuaRocks" 2
+	echo "Cleaning up"
 	cd .. 
 	rm -rf luarocks*
 }
@@ -60,13 +62,13 @@ zsh_default(){
 	if ! which zsh >/dev/null 2>&1; then
 		echo "Could not find zsh. Installing..."
 		sudo $1 install zsh || error_handler "Could not install zsh" 2
-		chsh -s $(which zsh)
+		chsh -s $(which zsh) # Wont work on Fedora
 	else
 		echo "Seems like you already have it!"
 		chsh -s $(which zsh)
 	fi
 
-	## Install oh-my-zsh
+	## Install oh-my-zsh [INTERACTIVE, WILL BLOCK]
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 }
 
@@ -80,7 +82,8 @@ os_pm(){
 	for d in "${data[@]}"; do
 		key="${d%%=*}"	# Everything before the first =
 		value="${d#*=}"	# Everything after the first =
-
+		echo "This is the key: $key"
+		echo "This is the value: $value"
 
 		if [[ -n ${distro_pm[$value]+x} ]]; then
 			pm=${distro_pm[$value]}
@@ -112,7 +115,7 @@ installer(){
 			;;
 	esac
 	
-	echo "$inst_comm"
+	echo "Installer is: $inst_comm"
 
 	sudo "$pm" "$inst_comm"
 
@@ -134,7 +137,7 @@ installer(){
 	echo
 
 	echo "Making zsh the default shell and installing oh-my-zsh"
-	zsh_default
+	zsh_default "$pm"
 	echo
 }
 
