@@ -67,7 +67,7 @@ zsh_default(){
 	fi
 
 	## Install oh-my-zsh [INTERACTIVE, WILL BLOCK]
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
 }
 
@@ -135,11 +135,11 @@ installer(){
 	echo
 
 	echo "Kickstarting...(see what I did)"
-	install_kick "$pm" "$comm_install"
+	install_kick "$pm" "${comm_install[@]}"
 	echo
 	
 	echo "Making zsh the default shell and installing oh-my-zsh"
-	zsh_default "$pm" "$comm_install"
+	zsh_default "$pm" "${comm_install[@]}"
 	echo
 
 }
