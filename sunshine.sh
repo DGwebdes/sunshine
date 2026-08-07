@@ -53,7 +53,7 @@ install_nvim(){
 }
 ## nvim Kickstart
 install_kick(){
-	sudo $1 install ripgrep fd-find xclip tree-sitter-cli || error_handler "Failed to install kickstart essentials" 2
+	sudo $1 $2 ripgrep fd-find xclip tree-sitter-cli || error_handler "Failed to install kickstart essentials" 2
 	git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 }
 
@@ -61,7 +61,7 @@ install_kick(){
 zsh_default(){
 	if ! which zsh >/dev/null 2>&1; then
 		echo "Could not find zsh. Installing..."
-		sudo $1 install zsh || error_handler "Could not install zsh" 2
+		sudo $1 $2 zsh || error_handler "Could not install zsh" 2
 		chsh -s $(which zsh) # Wont work on Fedora
 	else
 		echo "Seems like you already have it!"
@@ -94,15 +94,18 @@ os_pm(){
 # --- INSTALLATION FUNCTIONS ---
 installer(){
 	echo "pm is: $pm"
-	inst_comm=""
+	comm_update=""
+	comm_install=""
 
 
 	case $pm in
 		"apt-get")
-			inst_comm="update"
+			comm_update="update"
+			comm_install="install -y"
 			;;
 		"dnf")
-			inst_comm="upgrade"
+			comm_update="upgrade"
+			comm_install="install -y"
 			;;
 		"pacman")
 			echo "running Arch I see"
@@ -115,16 +118,16 @@ installer(){
 			;;
 	esac
 	
-	echo "Installer is: $inst_comm"
+	echo "Installer is: $comm_update"
 
-	sudo "$pm" "$inst_comm"
+	sudo "$pm" "$comm_update"
 
 	for i in "${essentials[@]}"; do
-		sudo "$pm" install -y "$i"
+		sudo "$pm" "$comm_install" "$i"
 	done
 
 	echo "Making zsh the default shell and installing oh-my-zsh"
-	zsh_default "$pm"
+	zsh_default "$pm" "$comm_install"
 	echo
 
 	echo "Installing Lua"
@@ -137,7 +140,7 @@ installer(){
 	echo
 
 	echo "Kickstarting...(see what I did)"
-	install_kick "$pm"
+	install_kick "$pm" "$comm_install"
 	echo
 
 }
