@@ -11,7 +11,6 @@ declare -A distro_pm=(
 	[arch]="pacman"
 	[opensuse]="zypper"
 )
-essentials=(build-essential libreadline-dev unzip curl wget)
 
 ## --- HELPER FUNCTIONS ---
 error_handler(){
@@ -96,16 +95,18 @@ installer(){
 	echo "pm is: $pm"
 	comm_update=""
 	comm_install=""
-
+	essentials=""
 
 	case $pm in
 		"apt-get")
 			comm_update="update"
-			comm_install="install -y"
+			comm_install=(install -y)
+			essentials=(unzip build-essential libreadline-dev curl wget)
 			;;
 		"dnf")
 			comm_update="upgrade"
-			comm_install="install -y"
+			comm_install=(install -y)
+			essentials=(unzip gcc gcc-c++ make glibc-devel readline-devel curl wget)
 			;;
 		"pacman")
 			echo "running Arch I see"
@@ -118,12 +119,12 @@ installer(){
 			;;
 	esac
 	
-	echo "Installer is: $comm_update"
+	echo "Installer and Update commands are: $comm_install $comm_update"
 
 	sudo "$pm" "$comm_update"
 
 	for i in "${essentials[@]}"; do
-		sudo "$pm" "$comm_install" "$i"
+		sudo "$pm" "${comm_install[@]}" "$i"
 	done
 
 	echo "Making zsh the default shell and installing oh-my-zsh"
