@@ -1,5 +1,7 @@
 # Initial Linux Setup and Config
 
+- Needs git installed for now.
+
 ## But why ?
 
 I often use Virtual Machines for my work, personal labs, learning cyber security and what not
@@ -20,10 +22,9 @@ Most often I have to:
 - [x] Neovim text editor
 - [x] Neovim Kickstart (solid nvim configuration)
 - [x] Oh-My-Zsh (sets zsh as the default shell)
-- [ ]AI tools (opencode)
+- [ ] AI tools (opencode)
 - [ ] Docker Engine
 
-This assumes you have Git and some of the most basic packages installed. 
 Right now this also only works with Linux distributions.
 
 ## Platforms
