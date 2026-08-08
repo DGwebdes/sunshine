@@ -47,30 +47,28 @@ install_nvim(){
 	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz || error_handler "Curl error to fetch neovim tarball" 2
 	sudo rm -rf /opt/nvim-linux-x86_64 || error_handler "Could not delete directory" 2
 	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz || error_handler "Tar extraction failed" 2
+	rm -rf nvim-*
 	echo "Neovim Installed"
 }
 ## nvim Kickstart
 install_kick(){
-	sudo $1 $2 ripgrep fd-find xclip tree-sitter-cli || error_handler "Failed to install kickstart essentials" 2
+	sudo $1 $2 $3 ripgrep fd-find xclip tree-sitter-cli || error_handler "Failed to install kickstart essentials" 2
 	git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 }
 
 # Set ZSH as the default shell
 zsh_default(){
-	if ! which zsh >/dev/null 2>&1; then
+	if ! command -v zsh >/dev/null 2>&1; then
 		echo "Could not find zsh. Installing..."
-		sudo $1 $2 zsh || error_handler "Could not install zsh" 2
-		if [[ $1 = "dnf" ]]; then
-			sudo chsh $USER
-		else
-			chsh -s $(which zsh)
-		fi
+		sudo $1 $2 $3 zsh || error_handler "Could not install zsh" 2
+		sudo chsh $USER
+		chsh -s $(command -v zsh)
 	else
 		echo "Seems like you already have it!"
-		chsh -s $(which zsh)
+		chsh -s $(command -v zsh)
 	fi
 
-	## Install oh-my-zsh [INTERACTIVE, WILL BLOCK]
+	## Install oh-my-zsh
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
 }
@@ -95,9 +93,6 @@ os_pm(){
 # --- INSTALLATION FUNCTIONS ---
 installer(){
 	echo "pm is: $pm"
-	comm_update=""
-	comm_install=""
-	essentials=""
 
 	case $pm in
 		"apt-get")

@@ -1,5 +1,6 @@
 # Initial Linux Setup and Config
 
+- **Needs sudo privileges**
 - **Needs git installed for now.**
 
 ## But why ?
