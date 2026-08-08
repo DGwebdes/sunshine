@@ -26,7 +26,7 @@ install_lua(){
 	tar zxf lua-5.5.1.tar.gz || error_handler "Tar failed to extract" 2
 	cd lua-5.5.1 || error_handler "Failed to cd into lua directory" 2
 	make all test || error_handler "Failed to build Lua" 2
-	make install || error_handler "Failed to Install Lua" 2
+	sudo make install || error_handler "Failed to Install Lua" 2
 	echo "Cleaning up"
 	cd .. 
 	rm -rf lua-*
@@ -60,7 +60,11 @@ zsh_default(){
 	if ! which zsh >/dev/null 2>&1; then
 		echo "Could not find zsh. Installing..."
 		sudo $1 $2 zsh || error_handler "Could not install zsh" 2
-		chsh -s $(which zsh) # Wont work on Fedora
+		if [[ $1 = "dnf" ]]; then
+			sudo chsh $USER
+		else
+			chsh -s $(which zsh)
+		fi
 	else
 		echo "Seems like you already have it!"
 		chsh -s $(which zsh)
