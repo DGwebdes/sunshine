@@ -61,7 +61,6 @@ zsh_default(){
 	if ! command -v zsh >/dev/null 2>&1; then
 		echo "Could not find zsh. Installing..."
 		sudo $1 $2 $3 zsh || error_handler "Could not install zsh" 2
-		sudo chsh $USER
 		chsh -s $(command -v zsh)
 	else
 		echo "Seems like you already have it!"
@@ -71,6 +70,7 @@ zsh_default(){
 	## Install oh-my-zsh
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
+	zsh
 }
 
 
