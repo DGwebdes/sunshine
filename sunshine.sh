@@ -48,7 +48,7 @@ install_nvim(){
 	sudo rm -rf /opt/nvim-linux-x86_64 >> install.log 2>&1 || error_handler "Could not delete directory" 2
 	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz >> install.log 2>&1 || error_handler "Tar extraction failed" 2
 	rm -rf nvim-*
-	echo "Neovim Installed"
+	echo "Cleaning up"
 }
 ## nvim Kickstart
 install_kick(){
@@ -69,7 +69,7 @@ zsh_default(){
 
 	## Install oh-my-zsh
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc >> install.log 2>&1 || error_handler "failed to export to path" 2
+	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
 	zsh
 }
 
@@ -118,10 +118,10 @@ installer(){
 	
 	echo "Installer and Update commands are: $comm_install $comm_update"
 
-	sudo "$pm" "$comm_update"
+	sudo "$pm" "$comm_update" >> updater.log 2>&1
 
 	for i in "${essentials[@]}"; do
-		sudo "$pm" "${comm_install[@]}" "$i"
+		sudo "$pm" "${comm_install[@]}" "$i" >> updater.log 2>&1
 	done
 
 	echo "Installing Lua"
