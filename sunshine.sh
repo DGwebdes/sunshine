@@ -101,7 +101,7 @@ installer(){
 			essentials=(unzip build-essential libreadline-dev curl wget)
 			;;
 		"dnf")
-			comm_update="upgrade"
+			comm_update="check-update"
 			comm_install=(install -y)
 			essentials=(unzip gcc gcc-c++ make glibc-devel readline-devel curl wget)
 			;;
