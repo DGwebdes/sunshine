@@ -73,10 +73,10 @@ zsh_default(){
 	if ! command -v zsh >/dev/null 2>&1; then
 		info_handler "Could not find zsh. Installing..."
 		sudo "$1" "${@:2}" zsh >> install.log 2>&1 || error_handler "Could not install zsh" 2
-		chsh -s $(command -v zsh)
+		sudo chsh -s $(command -v zsh) $USER
 	else
 		info_handler "Seems like you already have it!"
-		chsh -s $(command -v zsh)
+		sudo chsh -s $(command -v zsh) $USER
 	fi
 
 	## Install oh-my-zsh
@@ -84,7 +84,6 @@ zsh_default(){
 
 	# Export neovim to PATH after oh-my-zsh is installed and zshrc file is set
 	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
-	zsh
 }
 
 
