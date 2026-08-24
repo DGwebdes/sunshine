@@ -131,7 +131,7 @@ installer(){
 	
 	suc_handler "Installer and Update commands are: ${comm_install[@]} $comm_update"
 
-	sudo "$pm" "$comm_update" >> updater.log 2>&1
+	sudo "$pm" "$comm_update" >> updater.log 2>&1 || error_handler "Failed to update the system..." 2
 
 	for i in "${essentials[@]}"; do
 		sudo "$pm" "${comm_install[@]}" "$i" >> updater.log 2>&1 || error_handler "Failed to install essential package" 2
