@@ -101,6 +101,7 @@ os_pm(){
 			pm=${distro_pm[$value]}
 		fi
 	done
+
 }
 
 # --- INSTALLATION FUNCTIONS ---
@@ -129,8 +130,8 @@ installer(){
 			;;
 	esac
 	
-	suc_handler "Installer and Update commands are: ${comm_install[@]} $comm_update"
-
+	suc_handler "Updating the system..."
+	
 	sudo "$pm" "$comm_update" >> updater.log 2>&1 || error_handler "Failed to update the system..." 2
 
 	for i in "${essentials[@]}"; do
@@ -153,8 +154,6 @@ installer(){
 	zsh_default "$pm" "${comm_install[@]}"
 
 }
-
-suc_handler "Updating the system..."
 
 main(){
 	os_pm
