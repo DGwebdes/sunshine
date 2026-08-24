@@ -36,7 +36,7 @@ install_lr(){
 	wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz >> install.log 2>&1 || error_handler "Wget failed to download luarocks" 2
 	tar zxpf luarocks-3.13.0.tar.gz >> install.log 2>&1 || error_handler "Tar failed to extract" 2
 	cd luarocks-3.13.0 >> install.log 2>&1 || error_handler "Failed to cd into LuaRocks" 2
-	./configure --with-lua-include=/usr/local/include && make && sudo make install >> install.log 2>&1 || error_handler "Failed to build LuaRocks" 2
+	./configure --with-lua-include=/usr/local/include >> install.log 2>&1 && make >> install.log 2>&1 && sudo make install >> install.log 2>&1 || error_handler "Failed to build LuaRocks" 2
 	sudo luarocks install luasocket  >> install.log 2>&1 || error_handler "Failed to install LuaRocks" 2
 	echo "Cleaning up"
 	cd .. 
@@ -52,7 +52,7 @@ install_nvim(){
 }
 ## nvim Kickstart
 install_kick(){
-	sudo $1 $2 $3 ripgrep fd-find xclip tree-sitter-cli >> install.log 2>&1 || error_handler "Failed to install kickstart essentials" 2
+	sudo "$1" "${@:2}" ripgrep fd-find xclip tree-sitter-cli >> install.log 2>&1 || error_handler "Failed to install kickstart essentials" 2
 	git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 }
 
@@ -60,7 +60,7 @@ install_kick(){
 zsh_default(){
 	if ! command -v zsh >/dev/null 2>&1; then
 		echo "Could not find zsh. Installing..."
-		sudo $1 $2 $3 zsh >> install.log 2>&1 || error_handler "Could not install zsh" 2
+		sudo "$1" "${@:2}" zsh >> install.log 2>&1 || error_handler "Could not install zsh" 2
 		chsh -s $(command -v zsh)
 	else
 		echo "Seems like you already have it!"
@@ -69,6 +69,8 @@ zsh_default(){
 
 	## Install oh-my-zsh
 	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+	# Export neovim to PATH after oh-my-zsh is installed and zshrc file is set
 	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
 	zsh
 }
@@ -78,7 +80,6 @@ zsh_default(){
 os_pm(){
 
 	osdata=$(cat /etc/os-release | grep -e 'VERSION' -e 'ID' | tr '\n' ':')
-	pm=""
 	IFS=":" read -r -a data <<< "${osdata}" 
 	for d in "${data[@]}"; do
 		key="${d%%=*}"	# Everything before the first =
@@ -92,7 +93,6 @@ os_pm(){
 
 # --- INSTALLATION FUNCTIONS ---
 installer(){
-	echo "pm is: $pm"
 
 	case $pm in
 		"apt-get")
@@ -113,6 +113,7 @@ installer(){
 			;;
 		*)
 			echo "Keep your secrets then"
+			exit 1;
 			;;
 	esac
 	
@@ -126,20 +127,18 @@ installer(){
 
 	echo "Installing Lua"
 	install_lua
+
+	echo "Installing LuaRocks"
 	install_lr
-	echo
 
 	echo "Installing Neovim"
 	install_nvim
-	echo
 
 	echo "Kickstarting...(see what I did)"
 	install_kick "$pm" "${comm_install[@]}"
-	echo
 	
 	echo "Making zsh the default shell and installing oh-my-zsh"
 	zsh_default "$pm" "${comm_install[@]}"
-	echo
 
 }
 
