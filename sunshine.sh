@@ -23,6 +23,7 @@ suc_handler() {
 
 info_handler() {
 	printf "${YELLOW} %s${RESET}\n" "$1"
+}
 
 error_handler(){
 	printf "${RED}Error: %s${RESET}\n" "$1" >&2
@@ -112,7 +113,7 @@ installer(){
 			essentials=(unzip build-essential libreadline-dev curl wget)
 			;;
 		"dnf")
-			comm_update="check-update"
+			comm_update="upgrade"
 			comm_install=(install -y)
 			essentials=(unzip gcc gcc-c++ make glibc-devel readline-devel curl wget)
 			;;
@@ -128,12 +129,12 @@ installer(){
 			;;
 	esac
 	
-	suc_handler "Installer and Update commands are: $comm_install $comm_update"
+	suc_handler "Installer and Update commands are: ${comm_install[@]} $comm_update"
 
 	sudo "$pm" "$comm_update" >> updater.log 2>&1
 
 	for i in "${essentials[@]}"; do
-		sudo "$pm" "${comm_install[@]}" "$i" >> updater.log 2>&1
+		sudo "$pm" "${comm_install[@]}" "$i" >> updater.log 2>&1 || error_handler "Failed to install essential package" 2
 	done
 
 	info_handler "Installing Lua"
