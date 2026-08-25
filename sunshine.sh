@@ -65,7 +65,7 @@ install_nvim(){
 ## nvim Kickstart
 install_kick(){
 	sudo "$1" "${@:2}" ripgrep fd-find xclip tree-sitter-cli >> install.log 2>&1 || error_handler "Failed to install kickstart essentials" 2
-	git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
+	git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim >> install.log 2>&1 || error_handler "Failed to clone neovim" 2 
 }
 
 # Set ZSH as the default shell
@@ -80,7 +80,7 @@ zsh_default(){
 	fi
 
 	## Install oh-my-zsh
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --skip-chsh >> install.log 2>&1 || error_handler "Failed to install oh-my-zsh" 2
 
 	# Export neovim to PATH after oh-my-zsh is installed and zshrc file is set
 	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
@@ -129,7 +129,7 @@ installer(){
 			;;
 	esac
 	
-	suc_handler "Updating the system..."
+	suc_handler "Updating the system...\n Step 1 of 6."
 	
 	sudo "$pm" "$comm_update" >> updater.log 2>&1 || error_handler "Failed to update the system..." 2
 
@@ -137,19 +137,19 @@ installer(){
 		sudo "$pm" "${comm_install[@]}" "$i" >> updater.log 2>&1 || error_handler "Failed to install essential package" 2
 	done
 
-	info_handler "Installing Lua"
+	info_handler "Installing Lua...\n Step 2 of 6."
 	install_lua
 
-	info_handler "Installing LuaRocks"
+	info_handler "Installing LuaRocks...\n Step 3 of 6."
 	install_lr
 
-	info_handler "Installing Neovim"
+	info_handler "Installing Neovim...\n Step 4 of 6."
 	install_nvim
 
-	info_handler "Kickstarting...(see what I did)"
+	info_handler "Kickstarting...(see what I did)...\n Step 5 of 6."
 	install_kick "$pm" "${comm_install[@]}"
 	
-	info_handler "Making zsh the default shell and installing oh-my-zsh"
+	info_handler "Making zsh the default shell and installing oh-my-zsh...\n Last step before you are all set."
 	zsh_default "$pm" "${comm_install[@]}"
 
 }
