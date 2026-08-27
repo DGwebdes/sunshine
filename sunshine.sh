@@ -16,6 +16,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 RESET='\033[0m'
 
+
 ## --- HELPER FUNCTIONS ---
 suc_handler() {
 	printf "${GREEN} %s${RESET}\n" "$1"
@@ -65,7 +66,7 @@ install_nvim(){
 	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz >> install.log 2>&1 || error_handler "Tar extraction failed" 2
 	suc_handler "Cleaning up"
 	rm -rf nvim-*
-
+}
 ## nvim Kickstart
 install_kick(){
 	sudo "$1" "${@:2}" ripgrep fd-find xclip tree-sitter-cli >> install.log 2>&1 || error_handler "Failed to install kickstart essentials" 2
