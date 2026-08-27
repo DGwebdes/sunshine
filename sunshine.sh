@@ -85,7 +85,7 @@ zsh_default(){
 	fi
 
 	## Install oh-my-zsh
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" >> install.log 2>&1 || error_handler "Failed to install oh-my-zsh" 2
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || error_handler "Failed to install oh-my-zsh" 2
 
 	# Export neovim to PATH after oh-my-zsh is installed and zshrc file is set
 	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
