@@ -21,6 +21,10 @@ suc_handler() {
 	printf "${GREEN} %s${RESET}\n" "$1"
 }
 
+step_counter() {
+	printf "#{YELLOW} %s{RESET}\n" "$1"
+}
+
 info_handler() {
 	printf "${YELLOW} %s${RESET}\n" "$1"
 }
@@ -80,7 +84,7 @@ zsh_default(){
 	fi
 
 	## Install oh-my-zsh
-	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --skip-chsh >> install.log 2>&1 || error_handler "Failed to install oh-my-zsh" 2
+	sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" >> install.log 2>&1 || error_handler "Failed to install oh-my-zsh" 2
 
 	# Export neovim to PATH after oh-my-zsh is installed and zshrc file is set
 	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
@@ -129,7 +133,8 @@ installer(){
 			;;
 	esac
 	
-	suc_handler "Updating the system...\n Step 1 of 6."
+	suc_handler "Updating the system..."
+	step_counter "Step 1 of 6"
 	
 	sudo "$pm" "$comm_update" >> updater.log 2>&1 || error_handler "Failed to update the system..." 2
 
@@ -137,19 +142,24 @@ installer(){
 		sudo "$pm" "${comm_install[@]}" "$i" >> updater.log 2>&1 || error_handler "Failed to install essential package" 2
 	done
 
-	info_handler "Installing Lua...\n Step 2 of 6."
+	info_handler "Installing Lua..."
+	step_counter "Step 2 of 6"
 	install_lua
 
-	info_handler "Installing LuaRocks...\n Step 3 of 6."
+	info_handler "Installing LuaRocks..."
+	step_counter "Step 3 of 6"
 	install_lr
 
-	info_handler "Installing Neovim...\n Step 4 of 6."
+	info_handler "Installing Neovim..."
+	step_counter "Step 4 of 6"
 	install_nvim
 
-	info_handler "Kickstarting...(see what I did)...\n Step 5 of 6."
+	info_handler "Kickstarting...(see what I did)..."
+	step_counter "Step 5 of 6"
 	install_kick "$pm" "${comm_install[@]}"
 	
-	info_handler "Making zsh the default shell and installing oh-my-zsh...\n Last step before you are all set."
+	info_handler "Making zsh the default shell and installing oh-my-zsh..."
+	step_counter "Step 6 of 6"
 	zsh_default "$pm" "${comm_install[@]}"
 
 }
