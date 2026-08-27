@@ -22,7 +22,7 @@ suc_handler() {
 }
 
 step_counter() {
-	printf "#{YELLOW} %s{RESET}\n" "$1"
+	printf "${YELLOW} %s${RESET}\n" "$1"
 }
 
 info_handler() {
@@ -65,7 +65,7 @@ install_nvim(){
 	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz >> install.log 2>&1 || error_handler "Tar extraction failed" 2
 	suc_handler "Cleaning up"
 	rm -rf nvim-*
-}
+
 ## nvim Kickstart
 install_kick(){
 	sudo "$1" "${@:2}" ripgrep fd-find xclip tree-sitter-cli >> install.log 2>&1 || error_handler "Failed to install kickstart essentials" 2
@@ -123,7 +123,7 @@ installer(){
 			;;
 		"pacman")
 			comm_update="-Syu"
-			comm_install=(-S --no-confirm)
+			comm_install=(-S --noconfirm)
 			essentials=(unzip curl wget gcc make glibc readline)
 			;;
 		"zypper")
