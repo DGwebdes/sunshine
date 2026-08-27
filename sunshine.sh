@@ -122,10 +122,14 @@ installer(){
 			essentials=(unzip gcc gcc-c++ make glibc-devel readline-devel curl wget)
 			;;
 		"pacman")
-			info_handler "running Arch I see"
+			comm_update="-Syu"
+			comm_install=(-S --no-confirm)
+			essentials=(unzip curl wget gcc make glibc readline)
 			;;
 		"zypper")
-			info_handler "OpenSUSE is nice"
+			comm_update="refresh"
+			comm_install=(install -n)
+			essentials=(unzip curl wget gcc gcc-c++ make glibc-devel readline-devel)
 			;;
 		*)
 			info_handler "Keep your secrets then"
