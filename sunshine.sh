@@ -8,7 +8,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 RESET='\033[0m'
 
-package_manager=("dpkg" "apt" "apt-get" "rpm" "yum" "dnf" "zypper" "pacman" "snap")
+package_manager=("dpkg" "apt" "apt-get" "rpm" "yum" "dnf" "zypper" "pacman")
 
 
 ## --- HELPER FUNCTIONS ---
@@ -96,7 +96,7 @@ os_pm(){
 					echo "This is Debian/Ubuntu"
 					pm="apt"
 					;;
-				"dnf"|"yum")
+				"dnf"|"yum"|"rpm")
 					echo "This is Fedora/RHEL"
 					pm="dnf"
 					;;
@@ -110,7 +110,7 @@ os_pm(){
 					;;
 					
 				*)
-					echo "This is something else"
+					echo "We do not support the PM found."
 					exit 1
 					;;
 			esac
