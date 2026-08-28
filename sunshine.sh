@@ -68,28 +68,19 @@ install_kick(){
 }
 
 # Set ZSH as the default shell
-zsh_default(){
-	if ! command -v zsh >/dev/null 2>&1; then
-		info_handler "Could not find zsh. Installing..."
-		sudo "$1" "${@:2}" zsh >> zsh_install.log 2>&1 || error_handler "Could not install zsh" 2
-		sudo chsh -s $(command -v zsh) $USER
-	else
-		info_handler "Seems like you already have it!"
-		sudo chsh -s $(command -v zsh) $USER
-	fi
-
+install_omz(){
 	## Install oh-my-zsh
 	RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" >> omz.log 2>&1 || error_handler "Failed to install oh-my-zsh" 2
 
 	# Export neovim to PATH after oh-my-zsh is installed and zshrc file is set
-	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
+	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' <<< "y" >> $HOME/.zshrc || error_handler "failed to export to path" 2
 
 	# Collecting logs into one directory
 	job_done "Tidying up the room..."
 	mkdir -p sunshine-logs && mv ./*.log sunshine-logs
 
 	# spawning zsh Shell
-	exec zsh
+	exec zsh -l
 }
 
 
@@ -100,7 +91,7 @@ os_pm(){
 		if command -v "$manager" > /dev/null 2>&1; then
 			case $manager in
 				"apt-get"|"apt"|"dpkg")
-					pm="apt"
+					pm="apt-get"
 					;;
 				"dnf"|"yum"|"rpm")
 					pm="dnf"
@@ -127,7 +118,7 @@ os_pm(){
 installer(){
 
 	case $pm in
-		"apt")
+		"apt-get")
 			comm_update="update"
 			comm_install=(install -y)
 			essentials=(unzip build-essential libreadline-dev curl wget ripgrep fd-find xclip tree-sitter-cli)
@@ -153,34 +144,41 @@ installer(){
 			;;
 	esac
 	
-	job_done "Updating the system..."
-	step_counter "Step 1 of 6"
+	step_counter "Step 1 of 7"
+	info_handler "Updating the system..."
 	
 	sudo "$pm" "$comm_update" >> updater.log 2>&1 || error_handler "Failed to update the system..." 2
+	
+	job_done "System up to date"
+	
+	step_counter "Step 2 of 7"
+	info_handler "Installing essentials"
 
 	for i in "${essentials[@]}"; do
 		sudo "$pm" "${comm_install[@]}" "$i" >> updater.log 2>&1 || error_handler "Failed to install essential package" 2
 	done
 
+	job_done "Essentials packages installed"
+
+	step_counter "Step 3 of 7"
 	info_handler "Installing Lua..."
-	step_counter "Step 2 of 6"
 	install_lua
 
+	step_counter "Step 4 of 7"
 	info_handler "Installing LuaRocks..."
-	step_counter "Step 3 of 6"
 	install_lr
 
+	step_counter "Step 5 of 7"
 	info_handler "Installing Neovim..."
-	step_counter "Step 4 of 6"
 	install_nvim
 
+	step_counter "Step 6 of 7"
 	info_handler "Kickstarting...(see what I did)..."
-	step_counter "Step 5 of 6"
 	install_kick
 	
-	info_handler "Making zsh the default shell and installing oh-my-zsh..."
-	step_counter "Step 6 of 6"
-	zsh_default "$pm" "${comm_install[@]}"
+	step_counter "Step 7 of 7"
+	info_handler "Installing oh-my-zsh..."
+	install_omz
 
 }
 
