@@ -63,7 +63,6 @@ install_nvim(){
 }
 ## nvim Kickstart
 install_kick(){
-	sudo "$1" "${@:2}" ripgrep fd-find xclip tree-sitter-cli >> install.log 2>&1 || error_handler "Failed to install kickstart essentials" 2
 	git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim >> install.log 2>&1 || error_handler "Failed to clone neovim" 2 
 }
 
@@ -94,19 +93,15 @@ os_pm(){
 		if command -v "$manager" > /dev/null 2>&1; then
 			case $manager in
 				"apt-get"|"apt"|"dpkg")
-					echo "This is Debian/Ubuntu"
 					pm="apt"
 					;;
 				"dnf"|"yum"|"rpm")
-					echo "This is Fedora/RHEL"
 					pm="dnf"
 					;;
 				"pacman")
-					echo "This is Arch/Manjaro"
 					pm="pacman"
 					;;
 				"zypper")
-					echo "This is OpenSUSE/Leap/Tumbleweed"
 					pm="zypper"
 					;;
 					
@@ -128,22 +123,22 @@ installer(){
 		"apt-get")
 			comm_update="update"
 			comm_install=(install -y)
-			essentials=(unzip build-essential libreadline-dev curl wget)
+			essentials=(unzip build-essential libreadline-dev curl wget ripgrep fd-find xclip tree-sitter-cli)
 			;;
 		"dnf")
 			comm_update="upgrade"
 			comm_install=(install -y)
-			essentials=(unzip gcc gcc-c++ make glibc-devel readline-devel curl wget)
+			essentials=(unzip gcc gcc-c++ make glibc-devel readline-devel curl wget ripgrep fd-find xclip tree-sitter-cli)
 			;;
 		"pacman")
 			comm_update="-Syu"
 			comm_install=(-S --noconfirm)
-			essentials=(unzip curl wget gcc make glibc readline)
+			essentials=(unzip curl wget gcc make glibc readline ripgrep fd xclip tree-sitter-cli)
 			;;
 		"zypper")
 			comm_update="refresh"
 			comm_install=(install -y)
-			essentials=(unzip curl wget gcc gcc-c++ make glibc-devel readline-devel)
+			essentials=(unzip curl wget gcc gcc-c++ make glibc-devel readline-devel ripgrep fd xclip tree-sitter-cli)
 			;;
 		*)
 			info_handler "Keep your secrets then"
@@ -174,7 +169,7 @@ installer(){
 
 	info_handler "Kickstarting...(see what I did)..."
 	step_counter "Step 5 of 6"
-	install_kick "$pm" "${comm_install[@]}"
+	install_kick
 	
 	info_handler "Making zsh the default shell and installing oh-my-zsh..."
 	step_counter "Step 6 of 6"
