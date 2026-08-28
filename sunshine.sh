@@ -6,6 +6,7 @@ set -o pipefail
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
+PURPLE='\033[0;35m'
 RESET='\033[0m'
 
 package_manager=("dpkg" "apt" "apt-get" "rpm" "yum" "dnf" "zypper" "pacman")
@@ -17,7 +18,7 @@ job_done() {
 }
 
 step_counter() {
-	printf "${YELLOW} %s${RESET}\n" "$1"
+	printf "${PURPLE} %s${RESET}\n" "$1"
 }
 
 info_handler() {
@@ -120,7 +121,7 @@ os_pm(){
 installer(){
 
 	case $pm in
-		"apt-get")
+		"apt")
 			comm_update="update"
 			comm_install=(install -y)
 			essentials=(unzip build-essential libreadline-dev curl wget ripgrep fd-find xclip tree-sitter-cli)
