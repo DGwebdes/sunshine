@@ -83,6 +83,7 @@ zsh_default(){
 
 	# Export neovim to PATH after oh-my-zsh is installed and zshrc file is set
 	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
+	source $HOME/.zshrc || error_handler "Failed to source .zshrc file" 2
 }
 
 
