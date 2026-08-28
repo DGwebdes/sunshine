@@ -138,7 +138,7 @@ installer(){
 		"zypper")
 			comm_update="refresh"
 			comm_install=(install -y)
-			essentials=(unzip curl wget gcc gcc-c++ make glibc-devel readline-devel ripgrep fd xclip tree-sitter-cli)
+			essentials=(unzip curl wget gcc gcc-c++ make glibc-devel readline-devel ripgrep fd xclip tree-sitter)
 			;;
 		*)
 			info_handler "Keep your secrets then"

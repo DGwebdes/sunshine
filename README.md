@@ -1,8 +1,8 @@
 # Initial Linux Setup and Config
 
 - **Needs sudo privileges**
-- **This is not fully automated and needs user input at some points**
 - **Needs git installed for now.**
+- **This is not fully automated and needs user input at some points**
 
 ## But why ?
 
@@ -19,29 +19,23 @@ The solution? A script of course.
 - [x] Neovim text editor
 - [x] Neovim Kickstart (solid nvim configuration)
 - [x] Oh-My-Zsh (sets zsh as the default shell)
-- [ ] AI tools (opencode)
-- [ ] Docker Engine
 
-Right now this also only works with Linux distributions.
-
-## Platforms
+## Where it Works
 
 - [x] Debian / Ubuntu
 - [x] Fedora
 - [x] RHEL
-- [ ] Centos
-- [ ] Arch
-- [ ] OpenSUSE
-
-# How to Use it
+- [x] Centos
+- [x] Arch
+- [x] OpenSUSE
 
 ## Clone it and Run it
 
 ```
 git clone https://github.com/DGwebdes/sunshine.git
-
+```
+```
 sunshine/sunshine.sh
-
 ```
 
 That's it.
