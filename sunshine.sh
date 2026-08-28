@@ -122,22 +122,22 @@ installer(){
 		"apt-get")
 			comm_update="update"
 			comm_install=(install -y)
-			essentials=(unzip build-essential libreadline-dev curl wget ripgrep fd-find xclip tree-sitter-cli)
+			essentials=(zsh unzip build-essential libreadline-dev curl wget ripgrep fd-find xclip tree-sitter-cli)
 			;;
 		"dnf")
 			comm_update="upgrade"
 			comm_install=(install -y)
-			essentials=(unzip gcc gcc-c++ make glibc-devel readline-devel curl wget ripgrep fd-find xclip tree-sitter-cli)
+			essentials=(zsh unzip gcc gcc-c++ make glibc-devel readline-devel curl wget ripgrep fd-find xclip tree-sitter-cli)
 			;;
 		"pacman")
 			comm_update="-Syu"
 			comm_install=(-S --noconfirm)
-			essentials=(unzip curl wget gcc make glibc readline ripgrep fd xclip tree-sitter-cli)
+			essentials=(zsh unzip curl wget gcc make glibc readline ripgrep fd xclip tree-sitter-cli)
 			;;
 		"zypper")
 			comm_update="refresh"
 			comm_install=(install -y)
-			essentials=(unzip curl wget gcc gcc-c++ make glibc-devel readline-devel ripgrep fd xclip tree-sitter)
+			essentials=(zsh unzip curl wget gcc gcc-c++ make glibc-devel readline-devel ripgrep fd xclip tree-sitter)
 			;;
 		*)
 			info_handler "Keep your secrets then"
