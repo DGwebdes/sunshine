@@ -40,8 +40,8 @@ install_lua(){
 	make all test >> lua_install.log 2>&1 || error_handler "Failed to build Lua" 2
 	sudo make install >> lua_install.log 2>&1 || error_handler "Failed to Install Lua" 2
 	job_done "Cleaning up"
-	cd .. 
-	rm -rf lua-*
+	cd .. || error_handler "Failed to change directory back.." 2
+	rm -rf lua-* || error_handler "Failed to clean up Lua install" 2
 }
 ## LuaRocks
 install_lr(){
@@ -51,8 +51,8 @@ install_lr(){
 	./configure --with-lua-include=/usr/local/include >> lr_install.log 2>&1 && make >> lr_install.log 2>&1 && sudo make install >> lr_install.log 2>&1 || error_handler "Failed to build LuaRocks" 2
 	sudo luarocks install luasocket  >> lr_install.log 2>&1 || error_handler "Failed to install LuaRocks" 2
 	job_done "Cleaning up"
-	cd .. 
-	rm -rf luarocks*
+	cd .. || "Failed to changed directory back.." 2
+	rm -rf luarocks* || "Failed to clean up LuaRocks install" 2
 }
 ## Neovim
 install_nvim(){
@@ -60,20 +60,21 @@ install_nvim(){
 	sudo rm -rf /opt/nvim-linux-x86_64 >> nvim_install.log 2>&1 || error_handler "Could not delete directory" 2
 	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz >> nvim_install.log 2>&1 || error_handler "Tar extraction failed" 2
 	job_done "Cleaning up"
-	rm -rf nvim-*
+	rm -rf nvim-* || "Failed to clean up neovim install" 2
 }
 ## nvim Kickstart
 install_kick(){
-	git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim >> install.log 2>&1 || error_handler "Failed to clone neovim" 2 
+	git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim || error_handler "Failed to clone neovim" 2
+	job_done "Kickstart cloned and working"
 }
 
 # Set ZSH as the default shell
 install_omz(){
 	## Install oh-my-zsh
-	RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" >> omz.log 2>&1 || error_handler "Failed to install oh-my-zsh" 2
+	RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" <<< "y" >> omz.log 2>&1 || error_handler "Failed to install oh-my-zsh" 2
 
 	# Export neovim to PATH after oh-my-zsh is installed and zshrc file is set
-	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' <<< "y" >> $HOME/.zshrc || error_handler "failed to export to path" 2
+	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
 
 	# Collecting logs into one directory
 	job_done "Tidying up the room..."
@@ -181,6 +182,8 @@ installer(){
 	install_omz
 
 }
+
+# Actually implement the Script
 
 main(){
 	os_pm
