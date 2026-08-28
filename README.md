@@ -39,3 +39,5 @@ sunshine/sunshine.sh
 ```
 
 That's it.
+
+NOTE: _After the script is done you need to RESTART the Terminal_
