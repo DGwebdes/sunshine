@@ -3,22 +3,16 @@
 set -e
 set -o pipefail
 
-declare -A distro_pm=(
-	[debian]="apt-get"
-	[ubuntu]="apt-get"
-	[fedora]="dnf"
-	[rhel]="dnf"
-	[arch]="pacman"
-	[opensuse]="zypper"
-)
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 RESET='\033[0m'
 
+package_manager=("dpkg" "apt" "apt-get" "rpm" "yum" "dnf" "zypper" "pacman" "snap")
+
 
 ## --- HELPER FUNCTIONS ---
-suc_handler() {
+job_done() {
 	printf "${GREEN} %s${RESET}\n" "$1"
 }
 
@@ -35,7 +29,7 @@ error_handler(){
 	exit "${2:-1}"
 }
 
-# PRIMARY TOOLS TO INSTALL
+# TOOLS TO INSTALL
 
 ## LUA commands and install
 install_lua(){
@@ -44,7 +38,7 @@ install_lua(){
 	cd lua-5.5.1 >> install.log 2>&1 || error_handler "Failed to cd into lua directory" 2
 	make all test >> install.log 2>&1 || error_handler "Failed to build Lua" 2
 	sudo make install >> install.log 2>&1 || error_handler "Failed to Install Lua" 2
-	suc_handler "Cleaning up"
+	job_done "Cleaning up"
 	cd .. 
 	rm -rf lua-*
 }
@@ -55,7 +49,7 @@ install_lr(){
 	cd luarocks-3.13.0 >> install.log 2>&1 || error_handler "Failed to cd into LuaRocks" 2
 	./configure --with-lua-include=/usr/local/include >> install.log 2>&1 && make >> install.log 2>&1 && sudo make install >> install.log 2>&1 || error_handler "Failed to build LuaRocks" 2
 	sudo luarocks install luasocket  >> install.log 2>&1 || error_handler "Failed to install LuaRocks" 2
-	suc_handler "Cleaning up"
+	job_done "Cleaning up"
 	cd .. 
 	rm -rf luarocks*
 }
@@ -64,7 +58,7 @@ install_nvim(){
 	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz >> install.log 2>&1 || error_handler "Curl error to fetch neovim tarball" 2
 	sudo rm -rf /opt/nvim-linux-x86_64 >> install.log 2>&1 || error_handler "Could not delete directory" 2
 	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz >> install.log 2>&1 || error_handler "Tar extraction failed" 2
-	suc_handler "Cleaning up"
+	job_done "Cleaning up"
 	rm -rf nvim-*
 }
 ## nvim Kickstart
@@ -95,16 +89,34 @@ zsh_default(){
 # --- CONFIRM OS AND PACKAGE MANAGER BEFORE START INSTALLING ---
 os_pm(){
 
-	osdata=$(cat /etc/os-release | grep -e 'VERSION' -e 'ID' | tr '\n' ':')
-	IFS=":" read -r -a data <<< "${osdata}" 
-	for d in "${data[@]}"; do
-		key="${d%%=*}"	# Everything before the first =
-		value="${d#*=}"	# Everything after the first =
-
-		if [[ -n ${distro_pm[$value]+x} ]]; then
-			pm=${distro_pm[$value]}
+	for manager in "${package_manager[@]}"; do
+		if command -v "$manager" > /dev/null 2>&1; then
+			case $manager in
+				"apt-get"|"apt"|"dpkg")
+					echo "This is Debian/Ubuntu"
+					pm="apt"
+					;;
+				"dnf"|"yum")
+					echo "This is Fedora/RHEL"
+					pm="dnf"
+					;;
+				"pacman")
+					echo "This is Arch/Manjaro"
+					pm="pacman"
+					;;
+				"zypper")
+					echo "This is OpenSUSE/Leap/Tumbleweed"
+					pm="zypper"
+					;;
+					
+				*)
+					echo "This is something else"
+					exit 1
+					;;
+			esac
 		fi
 	done
+	info_handler "Package Manager Found: $pm"
 
 }
 
@@ -129,7 +141,7 @@ installer(){
 			;;
 		"zypper")
 			comm_update="refresh"
-			comm_install=(install -n)
+			comm_install=(install -y)
 			essentials=(unzip curl wget gcc gcc-c++ make glibc-devel readline-devel)
 			;;
 		*)
@@ -138,7 +150,7 @@ installer(){
 			;;
 	esac
 	
-	suc_handler "Updating the system..."
+	job_done "Updating the system..."
 	step_counter "Step 1 of 6"
 	
 	sudo "$pm" "$comm_update" >> updater.log 2>&1 || error_handler "Failed to update the system..." 2
