@@ -32,28 +32,6 @@ error_handler(){
 
 # TOOLS TO INSTALL
 
-## LUA commands and install
-install_lua(){
-	curl -L -R -O https://www.lua.org/ftp/lua-5.5.1.tar.gz >> lua_install.log 2>&1 || error_handler "Curl failed to Download Lua" 2
-	tar zxf lua-5.5.1.tar.gz >> lua_install.log 2>&1 || error_handler "Tar failed to extract" 2
-	cd lua-5.5.1 >> lua_install.log 2>&1 || error_handler "Failed to cd into lua directory" 2
-	make all test >> lua_install.log 2>&1 || error_handler "Failed to build Lua" 2
-	sudo make install >> lua_install.log 2>&1 || error_handler "Failed to Install Lua" 2
-	job_done "Cleaning up"
-	cd .. || error_handler "Failed to change directory back.." 2
-	rm -rf lua-* || error_handler "Failed to clean up Lua install" 2
-}
-## LuaRocks
-install_lr(){
-	wget https://luarocks.org/releases/luarocks-3.13.0.tar.gz >> lr_install.log 2>&1 || error_handler "Wget failed to download luarocks" 2
-	tar zxpf luarocks-3.13.0.tar.gz >> lr_install.log 2>&1 || error_handler "Tar failed to extract" 2
-	cd luarocks-3.13.0 >> lr_install.log 2>&1 || error_handler "Failed to cd into LuaRocks" 2
-	./configure --with-lua-include=/usr/local/include >> lr_install.log 2>&1 && make >> lr_install.log 2>&1 && sudo make install >> lr_install.log 2>&1 || error_handler "Failed to build LuaRocks" 2
-	sudo luarocks install luasocket  >> lr_install.log 2>&1 || error_handler "Failed to install LuaRocks" 2
-	job_done "Cleaning up"
-	cd .. || "Failed to changed directory back.." 2
-	rm -rf luarocks* || "Failed to clean up LuaRocks install" 2
-}
 ## Neovim
 install_nvim(){
 	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz >> install.log 2>&1 || error_handler "Curl error to fetch neovim tarball" 2
@@ -64,7 +42,7 @@ install_nvim(){
 }
 ## nvim Kickstart
 install_kick(){
-	git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim || error_handler "Failed to clone neovim" 2
+	git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim >> kick.log 2>&1 || error_handler "Failed to clone neovim" 2
 	job_done "Kickstart cloned and working"
 }
 
@@ -105,7 +83,7 @@ os_pm(){
 					;;
 					
 				*)
-					echo "We do not support the PM found."
+					echo "We do not support this distribution yet."
 					exit 1
 					;;
 			esac
@@ -145,14 +123,16 @@ installer(){
 			;;
 	esac
 	
-	step_counter "Step 1 of 7"
+	step_counter "Step 1 of 5"
 	info_handler "Updating the system..."
 	
+	cd $HOME
+
 	sudo "$pm" "$comm_update" >> updater.log 2>&1 || error_handler "Failed to update the system..." 2
 	
 	job_done "System up to date"
 	
-	step_counter "Step 2 of 7"
+	step_counter "Step 2 of 5"
 	info_handler "Installing essentials"
 
 	for i in "${essentials[@]}"; do
@@ -161,26 +141,32 @@ installer(){
 
 	job_done "Essentials packages installed"
 
-	step_counter "Step 3 of 7"
-	info_handler "Installing Lua..."
-	install_lua
-
-	step_counter "Step 4 of 7"
-	info_handler "Installing LuaRocks..."
-	install_lr
-
-	step_counter "Step 5 of 7"
+	step_counter "Step 3 of 5"
 	info_handler "Installing Neovim..."
 	install_nvim
 
-	step_counter "Step 6 of 7"
+	step_counter "Step 4 of 5"
 	info_handler "Kickstarting...(see what I did)..."
 	install_kick
 	
-	step_counter "Step 7 of 7"
+	step_counter "Step 5 of 5"
 	info_handler "Installing oh-my-zsh..."
 	install_omz
 
+}
+
+# Summary function
+
+summary(){
+	job_done "Your system has been updated and new tools have been installed and configured, namely:"
+	info_handler "Neovim"
+	command -v nvim
+	info_handler "kickstart.nvim plugin"
+	ls $HOME/.config/nvim/lua
+	info_handler "oh-my-zsh"
+	ls $HOME/.oh-my-zsh/
+	job_done "Thanks for using my script!"
+	job_done "Now, run nvim and install the necessary plugins. Go write an awesome program you have fun doing."
 }
 
 # Actually implement the Script
@@ -188,6 +174,7 @@ installer(){
 main(){
 	os_pm
 	installer
+	summary
 }
 
 main

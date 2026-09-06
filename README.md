@@ -15,7 +15,6 @@ The solution? A script of course.
 
 - [x] Curl, wget (Just in case)
 - [x] Build-Essential (and distros equivalent, e.g. gcc-c++, readline-devel, and so on)
-- [x] Lua & LuaRocks
 - [x] Neovim text editor
 - [x] Neovim Kickstart (solid nvim configuration)
 - [x] Oh-My-Zsh (sets zsh as the default shell)
