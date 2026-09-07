@@ -37,6 +37,7 @@ install_nvim(){
 	curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz >> install.log 2>&1 || error_handler "Curl error to fetch neovim tarball" 2
 	sudo rm -rf /opt/nvim-linux-x86_64 >> nvim_install.log 2>&1 || error_handler "Could not delete directory" 2
 	sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz >> nvim_install.log 2>&1 || error_handler "Tar extraction failed" 2
+	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.bashrc
 	job_done "Cleaning up"
 	rm -rf nvim-* || "Failed to clean up neovim install" 2
 }
@@ -53,7 +54,9 @@ install_omz(){
 
 	# Export neovim to PATH after oh-my-zsh is installed and zshrc file is set
 	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
+}
 
+cleanup(){
 	# Collecting logs into one directory
 	job_done "Tidying up the room..."
 	mkdir -p sunshine-logs && mv ./*.log sunshine-logs
@@ -70,16 +73,21 @@ os_pm(){
 		if command -v "$manager" > /dev/null 2>&1; then
 			case $manager in
 				"apt-get"|"apt"|"dpkg")
-					pm="apt-get"
+					pm="apt-get";
+					break
 					;;
 				"dnf"|"yum"|"rpm")
-					pm="dnf"
+					pm="dnf";
+					break
 					;;
 				"pacman")
-					pm="pacman"
+					pm="pacman";
+					break
 					;;
 				"zypper")
-					pm="zypper"
+					pm="zypper";
+					brea;
+					break
 					;;
 					
 				*)
@@ -142,17 +150,28 @@ installer(){
 	job_done "Essentials packages installed"
 
 	step_counter "Step 3 of 5"
-	info_handler "Installing Neovim..."
-	install_nvim
+	if [ ! -d "/opt/nvim-linux-x86_64" ]; then 
+		info_handler "Installing Neovim..."
+		install_nvim
+	else
+		info_handler "You already have neovim installed. Skipping this step."
+	fi
 
 	step_counter "Step 4 of 5"
-	info_handler "Kickstarting...(see what I did)..."
-	install_kick
-	
+	if [ ! -d "${XDG_CONFIG_HOME:-$HOME/.config}/nvim" ]; then 
+		info_handler "Kickstarting...(see what I did)..."
+		install_kick
+	else
+		 info_handler "You already have the kickstart template installed. Skipping this step"
+	fi
+		
 	step_counter "Step 5 of 5"
-	info_handler "Installing oh-my-zsh..."
-	install_omz
-
+	if [ -d "${ZDOTDIR/ohmyzsh:-$HOME/.oh-my-zsh}" ]; then
+		info_handler "Installing oh-my-zsh..."
+		install_omz
+	else
+		info_handler "You already have oh-my-zsh installed. Skipping this step."
+	fi
 }
 
 # Summary function
@@ -175,6 +194,7 @@ main(){
 	os_pm
 	installer
 	summary
+	cleanup
 }
 
 main
