@@ -7,6 +7,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
 RESET='\033[0m'
 
 package_manager=("dpkg" "apt" "apt-get" "rpm" "yum" "dnf" "zypper" "pacman")
@@ -16,7 +17,9 @@ package_manager=("dpkg" "apt" "apt-get" "rpm" "yum" "dnf" "zypper" "pacman")
 job_done() {
 	printf "${GREEN} %s${RESET}\n" "$1"
 }
-
+cool_info() {
+	printf "${CYAN} %s${RESET}\n" "$1"
+}
 step_counter() {
 	printf "${PURPLE} %s${RESET}\n" "$1"
 }
@@ -51,7 +54,6 @@ install_kick(){
 install_omz(){
 	## Install oh-my-zsh
 	RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" <<< "y" >> omz.log 2>&1 || error_handler "Failed to install oh-my-zsh" 2
-
 	# Export neovim to PATH after oh-my-zsh is installed and zshrc file is set
 	echo 'export PATH="$PATH:/opt/nvim-linux-x86_64/bin"' >> $HOME/.zshrc || error_handler "failed to export to path" 2
 }
@@ -63,6 +65,7 @@ cleanup(){
 
 	# spawning zsh Shell
 	exec zsh -l
+
 }
 
 
@@ -166,7 +169,7 @@ installer(){
 	fi
 		
 	step_counter "Step 5 of 5"
-	if [ -d "${ZDOTDIR/ohmyzsh:-$HOME/.oh-my-zsh}" ]; then
+	if [ ! -d "${ZDOTDIR:-$HOME/.oh-my-zsh}" ]; then
 		info_handler "Installing oh-my-zsh..."
 		install_omz
 	else
@@ -179,11 +182,11 @@ installer(){
 summary(){
 	job_done "Your system has been updated and new tools have been installed and configured, namely:"
 	info_handler "Neovim"
-	command -v nvim
-	info_handler "kickstart.nvim plugin"
-	ls $HOME/.config/nvim/lua
+	cool_info "Neovim version: $(nvim --version)"
+	info_handler "Kickstart plugin"
+	ls -la $HOME/.config/nvim/lua
 	info_handler "oh-my-zsh"
-	ls $HOME/.oh-my-zsh/
+	ls -la $HOME/.oh-my-zsh
 	job_done "Thanks for using my script!"
 	job_done "Now, run nvim and install the necessary plugins. Go write an awesome program you have fun doing."
 }
@@ -194,7 +197,7 @@ main(){
 	os_pm
 	installer
 	summary
-	cleanup
+	cleanup	
 }
 
 main
