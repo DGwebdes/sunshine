@@ -62,10 +62,6 @@ cleanup(){
 	# Collecting logs into one directory
 	job_done "Tidying up the room..."
 	mkdir -p sunshine-logs && mv ./*.log sunshine-logs
-
-	# spawning zsh Shell
-	exec zsh -l
-
 }
 
 
@@ -188,7 +184,7 @@ summary(){
 	info_handler "oh-my-zsh"
 	ls -la $HOME/.oh-my-zsh
 	job_done "Thanks for using my script!"
-	job_done "Now, run nvim and install the necessary plugins. Go write an awesome program you have fun doing."
+	job_done "Now, run zsh then nvim. It will install the necessary plugins. Go write an awesome program you have fun doing."
 }
 
 # Actually implement the Script
