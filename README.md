@@ -1,7 +1,6 @@
 # Initial Linux Setup and Config
 
 - **Needs sudo privileges**
-- **Needs git installed for now.**
 - **This is not fully automated and needs user input at some points**
 
 ## But why ?
@@ -13,7 +12,7 @@ The solution? A script of course.
 
 ## What it Installs
 
-- [x] Curl, wget (Just in case)
+- [x] git, wget
 - [x] Build-Essential (and distros equivalent, e.g. gcc-c++, readline-devel, and so on)
 - [x] Neovim text editor
 - [x] Neovim Kickstart (solid nvim configuration)
@@ -31,10 +30,7 @@ The solution? A script of course.
 ## Clone it and Run it
 
 ```
-git clone https://github.com/DGwebdes/sunshine.git
-```
-```
-sunshine/sunshine.sh
+curl -fsSL https://githubusercontent.com/DGwebdes/sunshine/main/sunshine.sh | bash
 ```
 
 That's it.
