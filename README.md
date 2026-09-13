@@ -30,7 +30,7 @@ The solution? A script of course.
 ## Clone it and Run it
 
 ```
-curl -fsSL https://githubusercontent.com/DGwebdes/sunshine/main/sunshine.sh | bash
+curl -fsSL https://raw.githubusercontent.com/DGwebdes/sunshine/main/sunshine.sh | bash
 ```
 
 That's it.

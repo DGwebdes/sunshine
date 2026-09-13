@@ -10,7 +10,7 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 RESET='\033[0m'
 
-package_manager=("dpkg" "apt" "apt-get" "rpm" "yum" "dnf" "zypper" "pacman")
+package_manager=("apt" "apt-get" "yum" "dnf" "zypper" "pacman")
 
 
 ## --- HELPER FUNCTIONS ---
@@ -71,11 +71,11 @@ os_pm(){
 	for manager in "${package_manager[@]}"; do
 		if command -v "$manager" > /dev/null 2>&1; then
 			case $manager in
-				"apt-get"|"apt"|"dpkg")
+				"apt-get"|"apt")
 					pm="apt-get";
 					break
 					;;
-				"dnf"|"yum"|"rpm")
+				"dnf"|"yum")
 					pm="dnf";
 					break
 					;;
